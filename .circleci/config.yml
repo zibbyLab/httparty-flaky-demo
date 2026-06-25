@@ -1,0 +1,34 @@
+version: 2.1
+
+# Zibby flaky-test-fixer demo pipeline.
+#
+# Runs ONLY the self-contained flaky demo spec (spec/flaky_demo_spec.rb) with the
+# JUnit formatter, uploaded via store_test_results so CircleCI Insights can flag
+# it as flaky across runs. We deliberately do NOT `bundle install` httparty's
+# full Gemfile (it pins an ancient `mongrel` that won't build on modern Ruby) —
+# the demo spec needs nothing but rspec.
+jobs:
+  flaky-demo:
+    docker:
+      - image: cimg/ruby:3.2
+    steps:
+      - checkout
+      - run:
+          name: Install rspec + JUnit formatter
+          command: gem install rspec rspec_junit_formatter --no-document
+      - run:
+          name: RSpec (flaky demo spec, JUnit output)
+          command: |
+            mkdir -p test-results/rspec
+            rspec spec/flaky_demo_spec.rb \
+              --format progress \
+              --format RspecJunitFormatter --out test-results/rspec/results.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+
+workflows:
+  test:
+    jobs:
+      - flaky-demo
