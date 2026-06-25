@@ -3,7 +3,6 @@ gemspec
 
 gem 'base64'
 gem 'rake'
-gem 'mongrel',  '1.2.0.pre2'
 gem 'json'
 
 group :development do
@@ -15,9 +14,9 @@ end
 group :test do
   gem 'rexml'
   gem 'rspec',    '~> 3.4'
+  # Emit JUnit XML so CircleCI's store_test_results can detect the flaky spec.
+  gem 'rspec_junit_formatter', '~> 0.6'
   gem 'simplecov', require: false
-  gem 'aruba'
-  gem 'cucumber', '~> 2.3'
   gem 'webmock'
   gem 'addressable'
 end
