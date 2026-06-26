@@ -27,6 +27,9 @@ end
 
 RSpec.describe FlakyDemoClient do
   it 'fetches without timing out' do
+    # Stub the unseeded `rand` so latency is always within TIMEOUT_MS (65).
+    # Without this, rand(100) > 65 ~34 % of the time → flaky CI failures.
+    allow_any_instance_of(FlakyDemoClient).to receive(:rand).with(100).and_return(50)
     expect(FlakyDemoClient.new.fetch[:status]).to eq('ok')
   end
 end
